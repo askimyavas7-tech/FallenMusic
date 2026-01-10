@@ -1,27 +1,4 @@
-# MIT License
-#
-# Copyright (c) 2023 AnonymousX1025
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
 import os
-
 from yt_dlp import YoutubeDL
 
 ydl_opts = {
@@ -32,6 +9,28 @@ ydl_opts = {
     "quiet": True,
     "no_warnings": True,
     "prefer_ffmpeg": True,
+    "noplaylist": True,
+
+    # 🔐 COOKIES (ZORUNLU)
+    "cookies": "cookies.txt",
+
+    # 🚨 YouTube bot bypass
+    "extractor_args": {
+        "youtube": {
+            "player_client": ["android"],
+            "skip": ["dash", "hls"]
+        }
+    },
+
+    # 🧠 Gerçek cihaz gibi davran
+    "http_headers": {
+        "User-Agent": (
+            "Mozilla/5.0 (Linux; Android 10; SM-G973F) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/120.0.0.0 Mobile Safari/537.36"
+        )
+    },
+
     "postprocessors": [
         {
             "key": "FFmpegExtractAudio",
@@ -40,11 +39,12 @@ ydl_opts = {
         }
     ],
 }
+
 ydl = YoutubeDL(ydl_opts)
 
 
 def audio_dl(url: str) -> str:
-    sin = ydl.extract_info(url, False)
+    sin = ydl.extract_info(url, download=False)
     x_file = os.path.join("downloads", f"{sin['id']}.mp3")
     if os.path.exists(x_file):
         return x_file
