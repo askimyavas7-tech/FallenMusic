@@ -21,8 +21,16 @@
 # SOFTWARE.
 
 import os
-
 from yt_dlp import YoutubeDL
+
+# 📍 BU DOSYANIN BULUNDUĞU KLASÖR
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 🍪 cookies.txt DOSYASININ TAM YOLU
+COOKIES_PATH = os.path.join(BASE_DIR, "cookies.txt")
+
+print("COOKIE PATH:", COOKIES_PATH)
+print("COOKIE VAR MI:", os.path.exists(COOKIES_PATH))
 
 ydl_opts = {
     "format": "bestaudio/best",
@@ -32,6 +40,26 @@ ydl_opts = {
     "quiet": True,
     "no_warnings": True,
     "prefer_ffmpeg": True,
+    "noplaylist": True,
+
+    # 🔐 BURASI ÇOK ÖNEMLİ
+    "cookies": COOKIES_PATH,
+
+    "extractor_args": {
+        "youtube": {
+            "player_client": ["android"],
+            "skip": ["dash", "hls"]
+        }
+    },
+
+    "http_headers": {
+        "User-Agent": (
+            "Mozilla/5.0 (Linux; Android 10; SM-G973F) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/120.0.0.0 Mobile Safari/537.36"
+        )
+    },
+
     "postprocessors": [
         {
             "key": "FFmpegExtractAudio",
@@ -40,13 +68,16 @@ ydl_opts = {
         }
     ],
 }
+
 ydl = YoutubeDL(ydl_opts)
 
 
 def audio_dl(url: str) -> str:
-    sin = ydl.extract_info(url, False)
-    x_file = os.path.join("downloads", f"{sin['id']}.mp3")
-    if os.path.exists(x_file):
-        return x_file
+    info = ydl.extract_info(url, download=False)
+    file_path = os.path.join("downloads", f"{info['id']}.mp3")
+
+    if os.path.exists(file_path):
+        return file_path
+
     ydl.download([url])
-    return x_file
+    return file_path
