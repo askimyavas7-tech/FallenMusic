@@ -9,16 +9,7 @@
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
 
 import asyncio
 import importlib
@@ -43,50 +34,76 @@ from FallenMusic.Modules import ALL_MODULES
 
 
 async def fallen_startup():
+    # Load modules
     LOGGER.info("[•] Loading Modules...")
     for module in ALL_MODULES:
         importlib.import_module("FallenMusic.Modules." + module)
     LOGGER.info(f"[•] Loaded {len(ALL_MODULES)} Modules.")
 
+    # Prepare directories
     LOGGER.info("[•] Refreshing Directories...")
-    if "downloads" not in os.listdir():
+    if not os.path.isdir("downloads"):
         os.mkdir("downloads")
-    if "cache" not in os.listdir():
+    if not os.path.isdir("cache"):
         os.mkdir("cache")
     LOGGER.info("[•] Directories Refreshed.")
 
+    # Send bot info
     try:
         await app.send_message(
             SUNAME,
-            f"✯ ғᴀʟʟᴇɴ ᴍᴜsɪᴄ ʙᴏᴛ ✯\n\n𖢵 ɪᴅ : `{BOT_ID}`\n𖢵 ɴᴀᴍᴇ : {BOT_NAME}\n𖢵 ᴜsᴇʀɴᴀᴍᴇ : @{BOT_USERNAME}",
+            f"🔸 𝙏𝙍𝙀𝙉𝘿𝙔𝙊𝙇 𝙈𝙐̈𝙕𝙄𝙆 𝘽𝙊𝙏 🔸\n\n"
+            f"𖢵 ɪᴅ : `{BOT_ID}`\n"
+            f"𖢵 ɴᴀᴍᴇ : {BOT_NAME}\n"
+            f"𖢵 ᴜsᴇʀɴᴀᴍᴇ : @{BOT_USERNAME}",
         )
-    except:
+    except Exception as e:
         LOGGER.error(
-            f"{BOT_NAME} failed to send message at @{SUNAME}, please go & check."
+            f"Trendyol Müzik Bot failed to send message at @{SUNAME}: {e}"
         )
 
+    # Send assistant info
     try:
         await app2.send_message(
             SUNAME,
-            f"✯ ғᴀʟʟᴇɴ ᴍᴜsɪᴄ ᴀss ✯\n\n𖢵 ɪᴅ : `{ASS_ID}`\n𖢵 ɴᴀᴍᴇ : {ASS_NAME}\n𖢵 ᴜsᴇʀɴᴀᴍᴇ : @{ASS_USERNAME}",
+            f"🔸 𝙏𝙍𝙀𝙉𝘿𝙔𝙊𝙇 𝙈Ü𝙕𝙄𝙆 𝘼𝙎𝙄𝙎𝙏𝘼𝙉 🔸\n\n"
+            f"𖢵 ɪᴅ : `{ASS_ID}`\n"
+            f"𖢵 ɴᴀᴍᴇ : {ASS_NAME}\n"
+            f"𖢵 ᴜsᴇʀɴᴀᴍᴇ : @{ASS_USERNAME}",
         )
-    except:
+    except Exception as e:
         LOGGER.error(
-            f"{ASS_NAME} failed to send message at @{SUNAME}, please go & check."
+            f"Trendyol Müzik Asistan failed to send message at @{SUNAME}: {e}"
         )
 
-    await app2.send_message(BOT_USERNAME, "/start")
+    # Trigger /start
+    try:
+        await app2.send_message(BOT_USERNAME, "/start")
+    except Exception:
+        pass
 
-    LOGGER.info(f"[•] Bot Started As {BOT_NAME}.")
-    LOGGER.info(f"[•] Assistant Started As {ASS_NAME}.")
+    LOGGER.info("[•] Bot Started As 🔸 Trendyol Müzik Bot 🔸")
+    LOGGER.info("[•] Assistant Started As 🔸 Trendyol Müzik Asistan 🔸")
 
-    LOGGER.info(
-        "[•] \x53\x74\x61\x72\x74\x69\x6e\x67\x20\x50\x79\x54\x67\x43\x61\x6c\x6c\x73\x20\x43\x6c\x69\x65\x6e\x74\x2e\x2e\x2e"
-    )
-    await pytgcalls.start()
+    # Start PyTgCalls (SAFE MODE)
+    LOGGER.info("[•] Starting PyTgCalls Client...")
+
+    try:
+        await pytgcalls.start()
+        LOGGER.info("[✓] PyTgCalls Started Successfully.")
+    except Exception as e:
+        LOGGER.error(
+            f"[!] PyTgCalls Disabled (NodeJS missing or unsupported): {e}"
+        )
+
+    # Keep bot alive
     await idle()
 
 
 if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(fallen_startup())
-    LOGGER.error("Fallen Music Bot Stopped.")
+    try:
+        asyncio.get_event_loop().run_until_complete(fallen_startup())
+    except (KeyboardInterrupt, SystemExit):
+        pass
+    finally:
+        LOGGER.error("Trendyol Müzik Bot Stopped.")
